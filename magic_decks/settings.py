@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'magictop8.urls'
+ROOT_URLCONF = 'magic_decks.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'magictop8.wsgi.application'
+WSGI_APPLICATION = 'magic_decks.wsgi.application'
 
 
 # Database
