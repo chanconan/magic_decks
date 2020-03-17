@@ -6,6 +6,7 @@ from django.views.decorators.http import require_POST, require_http_methods
 from django.shortcuts import render
 from django.http import JsonResponse
 from scrapyd_api import ScrapydAPI
+from decks.models import ScrapyItem
 
 # connect scrapyd service
 scrapyd = ScrapydAPI('http://localhost:6800')
@@ -37,23 +38,29 @@ def crawl(request):
             return JsonResponse({'error': 'Not a valid URL'})
         
         domain = urlparse(url).netloc
-        settings = {}
+        unique_id = str(uuid4()) # create a unique ID. 
+        settings = {
+            'unique_id': unique_id, # unique ID for each record for DB
+            'USER_AGENT': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+        }
 
         task = scrapyd.schedule('default', 'icrawler', 
             settings=settings, url=url, domain=domain)
 
-        return JsonResponse({'task_id': task, 'status': 'started' })
+        return JsonResponse({'task_id': task, 'unique_id': unique_id, 'status': 'started' })
     
     elif request.method == 'GET':
         task_id = request.GET.get('task_id', None)
+        unique_id = request.GET.get('unique_id', None)
 
-        if not task_id:
+        if not task_id or not unique_id:
             return JsonResponse({'error': 'Missing args'})
 
         status = scrapyd.job_status('default', task_id)
         if status == 'finished':
             try:
                 # this is the unique_id that we created even before crawling started.
+                item = ScrapyItem.objects.get(unique_id=unique_id) 
                 return JsonResponse({'data': item.to_dict['data']})
             except Exception as e:
                 return JsonResponse({'error': str(e)})
