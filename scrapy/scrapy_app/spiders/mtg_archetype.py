@@ -1,6 +1,8 @@
 import scrapy
 
 class MtgArchetypeSpider(scrapy.Spider):
+    #TODO Needs to continuously update on website.
+
     name = "mtg_archetype"
 
     def start_requests(self):
