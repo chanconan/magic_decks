@@ -6,9 +6,9 @@ class MtgEvents(scrapy.Spider):
     def start_requests(self):
         archetype_file = open("deck_archetype.txt", "r")
         archetypes = archetype_file.readlines()
-        urls = ["http://mtgtop8.com/archetype?a=12&&meta=52&f=ST"]
-        # for archetype in archetypes:
-        #     urls.append(archetype)
+        urls = []
+        for archetype in archetypes:
+            urls.append(archetype)
         
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
